@@ -1,0 +1,322 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug 12 11:28:42 2025
+
+@author: victordemyanyuk
+"""
+
+import os
+import re
+import numpy as np
+import glob
+import pickle
+from tqdm import tqdm
+import matplotlib.pyplot as plt
+from nptdms import TdmsFile
+import warnings
+from datetime import datetime
+from tools import smooth
+from pathlib import Path
+from tdms_data_reading import read_tdms_data
+
+plt.close('all')
+search_dir=r'/Users/victordemyanyuk/Desktop/Intership_data/'
+savepath=r'/Users/victordemyanyuk/Desktop/Intership_data/'
+series='20250812_124411_80_He_1000_250_300_8'
+shot="1"
+# #shot=None
+# #channel='CH1_SHOT_CAP_U'
+# channel='PF2 Barrel'
+# #channel='PF1 Barrel'
+# #group_name='Monitoring'
+# group_name='Shot'
+# #group_name='Measurements'
+# # d=read_tdms_data(channel,shot=shot,search_dir=search_dir,savepath=savepath)
+# d=read_tdms_data(channel,shot=shot,series=series,group_name=group_name,search_dir=search_dir,savepath=savepath)
+# # d=read_one_channel(channel,shot=shot,series=series)
+# data=d['data']
+# time=d['time']
+# time = (time - time[0]) / np.timedelta64(1, 'ms')
+# # time = (time ) / np.timedelta64(1, 's')
+# # plt.scatter(time,smooth(data,10))
+# plt.figure(1)
+# plt.plot(time,data)
+# # ind=smooth(data,10).argmin()
+# # print(np.mean(data[ind-4:ind+4]))
+# # plt.plot(d['time'],d['data'])
+# plt.ylabel('p '+d['unit'])
+# plt.xlabel('time')
+# # plt.plot(d['data'])
+# plt.show()
+
+# plt.figure(1)
+# channel='PF1 Barrel'
+# #group_name='Monitoring'
+# group_name='Shot'
+# #group_name='Measurements'
+# # d=read_tdms_data(channel,shot=shot,search_dir=search_dir,savepath=savepath)
+# d=read_tdms_data(channel,shot=shot,series=series,group_name=group_name,search_dir=search_dir,savepath=savepath)
+# # d=read_one_channel(channel,shot=shot,series=series)
+# data=d['data']
+# time=d['time']
+# time = (time - time[0]) / np.timedelta64(1, 'ms')
+# # time = (time ) / np.timedelta64(1, 's')
+# # plt.scatter(time,smooth(data,10))
+# plt.plot(time,data)
+# # ind=smooth(data,10).argmin()
+# # print(np.mean(data[ind-4:ind+4]))
+# # plt.plot(d['time'],d['data'])
+# plt.ylabel('p '+d['unit'])
+# plt.xlabel('time')
+# # plt.plot(d['data'])
+# plt.show()
+
+arr=np.array(['20250812_124411_80_He_1000_250_300_8','20250812_124833_80_He_1000_250_300_8','20250812_130841_70_He_700_250_300_8','20250812_131407_60_He_700_250_300_8','20250812_132022_50_He_700_250_300_8','20250812_132904_65_He_700_250_300_8','20250812_133228_68_He_700_250_300_8','20250812_133537_63_He_700_250_300_8'])
+pressure_array=np.array([80,75,70,60,50,65,68,63])
+# for series, pressure in zip(arr,pressure_array):   
+#     plt.figure(1)
+#     print(series)
+#     channel='PF2 Barrel'
+#     group_name='Shot'
+#     d=read_tdms_data(channel,shot=shot,series=series,group_name=group_name,search_dir=search_dir,savepath=savepath)
+#     data=d['data']
+#     time=d['time']
+#     time = (time - time[0]) / np.timedelta64(1, 'ms')
+#     data = (data - data[0]+pressure)
+#     plt.figure(1)
+#     plt.plot(time,data,label=str(pressure))
+#     plt.ylabel('p '+d['unit'])
+#     plt.xlabel('time')
+#     plt.legend()
+#     plt.legend (title="Pressure [bar]",loc="upper right")
+#     plt.show()
+#     plt.savefig(savepath+"pressure_drop.png")
+    
+#     plt.figure(2)
+#     channel='PF1 Barrel'
+#     group_name='Shot'
+#     d=read_tdms_data(channel,shot=shot,series=series,group_name=group_name,search_dir=search_dir,savepath=savepath)
+#     data=d['data']
+#     time=d['time']
+#     time = (time - time[0]) / np.timedelta64(1, 'ms')
+#     data = (data - data[0]+pressure)
+#     plt.figure(1)
+#     plt.plot(time,data,label=str(pressure))
+#     plt.ylabel('p '+d['unit'])
+#     plt.xlabel('time')
+#     plt.legend()
+#     plt.legend (title="Pressure [bar]",loc="upper right")
+#     plt.show()
+#     plt.savefig(savepath+"pressure_rise.png")
+    
+# make sure you have: import numpy as np; import matplotlib.pyplot as plt
+
+# fig1, ax1 = plt.subplots()  # PF2 figure
+# fig2, ax2 = plt.subplots()  # PF1 figure
+
+# unit_pf2 = None
+# unit_pf1 = None
+
+# for series, pressure in zip(arr, pressure_array):
+#     print(series)
+
+#     # --- PF2 Barrel ---
+#     channel = 'PF2 Barrel'
+#     group_name = 'Shot'
+#     d = read_tdms_data(channel, shot=shot, series=series, group_name=group_name,
+#                        search_dir=search_dir, savepath=savepath)
+#     time = (d['time'] - d['time'][0]) / np.timedelta64(1, 'ms')
+#     data = (d['data'] - d['data'][0])
+#     unit_pf2 = d.get('unit', unit_pf2)
+#     ax1.plot(time, data, label=str(pressure))
+
+#     # --- PF1 Barrel ---
+#     channel = 'PF1 Barrel'
+#     d = read_tdms_data(channel, shot=shot, series=series, group_name=group_name,
+#                        search_dir=search_dir, savepath=savepath)
+#     time = (d['time'] - d['time'][0]) / np.timedelta64(1, 'ms')
+#     data = (d['data'] - d['data'][0])
+#     unit_pf1 = d.get('unit', unit_pf1)
+#     ax2.plot(time, data, label=str(pressure))
+
+# # --- Final formatting & save ---
+
+# ax1.set_title('Valve_Pressure')
+# ax1.set_xlabel('time [ms]')
+# ax1.set_ylabel('p ' + (unit_pf2 if unit_pf2 else ''))
+# ax1.legend(title="Pressure [bar]", loc="upper right")
+# fig1.tight_layout()
+# fig1.savefig(savepath + "pressure_drop2.png", dpi=300, bbox_inches='tight')
+
+# ax2.set_title('Barrel_Pressure')
+# ax2.set_xlabel('time [ms]')
+# ax2.set_ylabel('p ' + (unit_pf1 if unit_pf1 else ''))
+# ax2.legend(title="Pressure [bar]", loc="upper right")
+# fig2.tight_layout()
+# fig2.savefig(savepath + "pressure_rise2.png", dpi=300, bbox_inches='tight')
+
+# plt.show()
+
+# fig1, ax1 = plt.subplots()  # PF2 figure
+# fig2, ax2 = plt.subplots()  # PF1 figure
+
+# unit_pf2 = None
+# unit_pf1 = None
+
+# for series, pressure in zip(arr, pressure_array):
+#     print(series)
+
+#     # --- PF2 Barrel ---
+#     channel = 'PF2 Barrel'
+#     group_name = 'Shot'
+#     d = read_tdms_data(channel, shot=shot, series=series, group_name=group_name,
+#                        search_dir=search_dir, savepath=savepath)
+#     time = (d['time'] - d['time'][0]) / np.timedelta64(1, 'ms')
+#     data = (d['data'] - d['data'][0])
+#     unit_pf2 = d.get('unit', unit_pf2)
+#     ax1.plot(time, data, label=str(pressure))
+
+#     # --- PF1 Barrel ---
+#     channel = 'PF1 Barrel'
+#     d = read_tdms_data(channel, shot=shot, series=series, group_name=group_name,
+#                        search_dir=search_dir, savepath=savepath)
+#     time = (d['time'] - d['time'][0]) / np.timedelta64(1, 'ms')
+#     data = (d['data'] - d['data'][0])
+#     unit_pf1 = d.get('unit', unit_pf1)
+#     ax2.plot(time, data, label=str(pressure))
+
+# # --- Final formatting & save ---
+
+# # PF2 legend sorted descending
+# handles, labels = ax1.get_legend_handles_labels()
+# labels = list(map(float, labels))  # convert to float for sorting
+# sorted_pairs = sorted(zip(labels, handles), reverse=True)
+# labels, handles = zip(*sorted_pairs)
+# ax1.legend(handles, [str(l) for l in labels], title="Pressure [bar]", loc="upper right")
+
+# ax1.set_title('Valve_Pressure')
+# ax1.set_xlabel('time [ms]')
+# ax1.set_ylabel('p ' + (unit_pf2 if unit_pf2 else ''))
+# fig1.tight_layout()
+# fig1.savefig(savepath + "pressure_drop2.png", dpi=300, bbox_inches='tight')
+
+# # PF1 legend sorted descending
+# handles, labels = ax2.get_legend_handles_labels()
+# labels = list(map(float, labels))
+# sorted_pairs = sorted(zip(labels, handles), reverse=True)
+# labels, handles = zip(*sorted_pairs)
+# ax2.legend(handles, [str(l) for l in labels], title="Pressure [bar]", loc="upper right")
+
+# ax2.set_title('Barrel_Pressure')
+# ax2.set_xlabel('time [ms]')
+# ax2.set_ylabel('p ' + (unit_pf1 if unit_pf1 else ''))
+# fig2.tight_layout()
+# fig2.savefig(savepath + "pressure_rise2.png", dpi=300, bbox_inches='tight')
+
+# plt.show()
+
+
+# fig1, ax1 = plt.subplots()  # PF2 figure
+# fig2, ax2 = plt.subplots()  # PF1 figure
+
+# unit_pf2 = None
+# unit_pf1 = None
+
+# for series, pressure in zip(arr, pressure_array):
+#     print(series)
+
+#     # --- PF2 Barrel ---
+#     channel = 'PF2 Barrel'
+#     group_name = 'Shot'
+#     d = read_tdms_data(channel, shot=shot, series=series, group_name=group_name,
+#                        search_dir=search_dir, savepath=savepath)
+#     time = (d['time'] - d['time'][0]) / np.timedelta64(1, 'ms')
+#     data = (d['data'] - d['data'][0]+pressure)
+#     unit_pf2 = d.get('unit', unit_pf2)
+#     ax1.plot(time, data, label=str(pressure))
+
+#     # --- PF1 Barrel ---
+#     channel = 'PF1 Barrel'
+#     d = read_tdms_data(channel, shot=shot, series=series, group_name=group_name,
+#                        search_dir=search_dir, savepath=savepath)
+#     time = (d['time'] - d['time'][0]) / np.timedelta64(1, 'ms')
+#     data = (d['data'] - d['data'][0]+pressure)
+#     unit_pf1 = d.get('unit', unit_pf1)
+#     ax2.plot(time, data, label=str(pressure))
+
+# # --- Final formatting & save ---
+
+# # PF2 legend sorted descending
+# handles, labels = ax1.get_legend_handles_labels()
+# labels = list(map(float, labels))  # convert to float for sorting
+# sorted_pairs = sorted(zip(labels, handles), reverse=True)
+# labels, handles = zip(*sorted_pairs)
+# ax1.legend(handles, [str(l) for l in labels], title="Pressure [bar]", loc="upper right")
+
+# ax1.set_title('Valve_Pressure')
+# ax1.set_xlabel('time [ms]')
+# ax1.set_ylabel('p ' + (unit_pf2 if unit_pf2 else ''))
+# fig1.tight_layout()
+# fig1.savefig(savepath + "pressure_drop_offset.png", dpi=300, bbox_inches='tight')
+
+# # PF1 legend sorted descending
+# handles, labels = ax2.get_legend_handles_labels()
+# labels = list(map(float, labels))
+# sorted_pairs = sorted(zip(labels, handles), reverse=True)
+# labels, handles = zip(*sorted_pairs)
+# ax2.legend(handles, [str(l) for l in labels], title="Pressure [bar]", loc="upper right")
+
+# ax2.set_title('Barrel_Pressure')
+# ax2.set_xlabel('time [ms]')
+# ax2.set_ylabel('p ' + (unit_pf1 if unit_pf1 else ''))
+# fig2.tight_layout()
+# fig2.savefig(savepath + "pressure_rise_offset.png", dpi=300, bbox_inches='tight')
+
+# plt.show()
+
+fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(8, 9))
+
+unit_valve = None
+unit_barrel = None
+
+for series, pressure in zip(arr, pressure_array):
+    # --- Valve_Pressure ---
+    d = read_tdms_data('PF2 Barrel', shot=shot, series=series, group_name='Shot',
+                       search_dir=search_dir, savepath=savepath)
+    t_valve = (d['time'] - d['time'][0]) / np.timedelta64(1, 'ms')
+    y_valve = d['data'] - d['data'][0]
+    unit_valve = d.get('unit', unit_valve)
+    ax1.plot(t_valve, y_valve, label=str(pressure))
+
+    # --- Barrel_Pressure ---
+    d = read_tdms_data('PF1 Barrel', shot=shot, series=series, group_name='Shot',
+                       search_dir=search_dir, savepath=savepath)
+    t_barrel = (d['time'] - d['time'][0]) / np.timedelta64(1, 'ms')
+    y_barrel = d['data'] - d['data'][0]
+    unit_barrel = d.get('unit', unit_barrel)
+    ax2.plot(t_barrel, y_barrel, label=str(pressure))
+
+# --- Formatting ---
+ax1.set_title('Valve_Pressure')
+ax1.set_ylabel('p ' + (unit_valve if unit_valve else ''))
+ax1.legend(title="Pressure [bar]", loc="upper right")
+
+ax2.set_title('Barrel_Pressure')
+ax2.set_xlabel('time [ms]')
+ax2.set_ylabel('p ' + (unit_barrel if unit_barrel else ''))
+ax2.legend(title="Pressure [bar]", loc="upper right")
+
+# --- Add vertical line at t = 10.22 ms ---
+x_coord = 10.22
+ax1.axvline(x=x_coord, color='k', linestyle='--', linewidth=1)
+ax2.axvline(x=x_coord, color='k', linestyle='--', linewidth=1)
+
+# Optional: label the line
+ax1.text(x_coord + 0.5, ax1.get_ylim()[1]*0.95, f"t = {x_coord} ms", rotation=90,
+         verticalalignment='top', fontsize=9)
+
+fig.tight_layout()
+plt.show()
+
+
